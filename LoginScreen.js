@@ -34,6 +34,7 @@ const App = () => {
     if (response?.type === "success") {
       const { code } = response.params;
       fetchAccessToken(code);
+      console.log("CODE" + code);
     }
   }, [response]);
 
@@ -41,9 +42,9 @@ const App = () => {
     const params = {
       grant_type: "authorization_code",
       code: authorizationCode,
-      redirect_uri: AuthConfig.redirectUrl,
-      client_id: AuthConfig.clientId,
-      client_secret: AuthConfig.clientSecret,
+      redirect_uri: "exp://172.28.228.16:19000/",
+      client_id: "14a44a5d38244f49be411a8dec546529",
+      client_secret: "edf1707c83b04e40958e5625b4864dee",
     };
 
     const response = await fetch(discovery.tokenEndpoint, {
@@ -56,6 +57,7 @@ const App = () => {
 
     const data = await response.json();
     setToken(data.access_token);
+    console.log("TOKEN" + token);
   };
 
   return (
