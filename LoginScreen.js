@@ -4,22 +4,22 @@ import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 import * as Random from "expo-random";
 import * as Crypto from "expo-crypto";
+import HomePage from "./HomePage";
 
 WebBrowser.maybeCompleteAuthSession();
 
 const App = () => {
-  React.useEffect(() => {
-    console.log("TOKEN REACT ", token);
-  }, [token]);
+  React.useEffect(() => {}, [token]);
 
   React.useEffect(() => {
     if (response) {
-      console.log("RESPONSE", response);
     }
     // ...
   }, [response]);
 
   const [token, setToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -30,9 +30,11 @@ const App = () => {
     {
       clientId: "14a44a5d38244f49be411a8dec546529",
       scopes: [
+        "user-top-read",
+        "user-read-currently-playing",
+        "user-read-playback-state",
+        "user-read-private",
         "user-read-email",
-        "playlist-modify-public",
-        "user-library-read",
       ],
       redirectUri: "exp://172.28.228.16:19000/",
       extraParams: {
@@ -75,25 +77,69 @@ const App = () => {
     });
 
     const data = await response.json();
-    console.log("DATA", data);
+
     setToken(data.access_token);
-    console.log("TOKEN", token);
+    if (data.access_token) {
+      setLoggedIn(true);
+    }
+
+    setRefreshToken(data.refresh_token); // Save the refresh token
+
+    // Calculate the token expiration time
+    const expiresIn = data.expires_in;
+    const expirationTime = new Date().getTime() + expiresIn * 1000;
+
+    setTimeout(() => {
+      refreshAccessToken();
+    }, refreshTime);
+  };
+
+  const refreshAccessToken = async () => {
+    if (!refreshToken) {
+      console.log("No refresh token available.");
+      return;
+    }
+
+    const params = {
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id: "14a44a5d38244f49be411a8dec546529",
+      client_secret: "edf1707c83b04e40958e5625b4864dee",
+    };
+
+    const encodedParams = Object.keys(params)
+      .map(
+        (key) => encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
+      )
+      .join("&");
+
+    const response = await fetch(discovery.tokenEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: encodedParams,
+    });
+
+    const data = await response.json();
+    console.log("Refreshed DATA", data);
+    setToken(data.access_token);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => {
-          promptAsync();
-        }}
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>Login with Spotify</Text>
-      </TouchableOpacity>
-      {token && (
+      {!loggedIn ? (
+        <TouchableOpacity
+          onPress={() => {
+            promptAsync();
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Login with Spotify</Text>
+        </TouchableOpacity>
+      ) : (
         <View>
-          <Text style={styles.tokenText}>Access Token:</Text>
-          <Text style={styles.token}>{token}</Text>
+          <HomePage token={token} refreshToken={refreshToken} />
         </View>
       )}
     </View>
