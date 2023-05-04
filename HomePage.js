@@ -5,7 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  SafeView,
+  SafeAreaView,
 } from "react-native";
 
 const HomePage = (props) => {
@@ -15,6 +15,7 @@ const HomePage = (props) => {
   const [topArtists, setTopArtists] = useState([]);
   const [displayName, setDisplayName] = useState("");
 
+  console.log("IM INSIDE THE HOMEPAGE");
   const fetchAndSetCurrentlyPlayingSong = async () => {
     const songData = await fetchCurrentlyPlayingSong(token);
     setCurrentlyPlaying(songData);
@@ -38,7 +39,6 @@ const HomePage = (props) => {
 
     const data = await response.json();
     setDisplayName(data.display_name);
-    console.log("ASPIJFASPFJSAF", displayName);
   };
 
   const fetchTopArtists = async () => {
@@ -109,81 +109,86 @@ const HomePage = (props) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome, {displayName}!</Text>
-      {currentlyPlaying && (
-        <View style={styles.currentlyPlaying}>
-          <Text style={styles.currentlyPlayingTitle}>Now Playing:</Text>
-          <Image
-            source={{ uri: currentlyPlaying.item.album.images[0].url }}
-            style={styles.trackImage}
-            resizeMode="cover"
-          />
-          <Text style={styles.songTitle}>{currentlyPlaying.item.name}</Text>
-          <Text style={styles.artistName}>
-            {currentlyPlaying.item.artists
-              .map((artist) => artist.name)
-              .join(", ")}
-          </Text>
-        </View>
-      )}
-      <View style={styles.topContent}>
-        {/* View for top 3 songs */}
-        <View style={styles.tracksView}>
-          <Text style={styles.subtitle}>Top Tracks:</Text>
-          <ScrollView horizontal={true}>
-            {topTracks.slice(0, 3).map((track, index) => (
-              <View key={track.id} style={styles.trackContainer}>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={styles.trackName}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {index + 1}. {track.name}
-                  </Text>
-                  <Text
-                    style={styles.trackArtist}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {track.artists.map((artist) => artist.name).join(", ")}
-                  </Text>
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.welcomeText}>Welcome, {displayName}!</Text>
+        {currentlyPlaying &&
+          currentlyPlaying.item &&
+          currentlyPlaying.item.album && (
+            <View style={styles.currentlyPlaying}>
+              <Text style={styles.currentlyPlayingTitle}>Now Playing:</Text>
+              <Image
+                source={{ uri: currentlyPlaying.item.album.images[0].url }}
+                style={styles.trackImage}
+                resizeMode="cover"
+              />
+              <Text style={styles.songTitle}>{currentlyPlaying.item.name}</Text>
+              <Text style={styles.artistName}>
+                {currentlyPlaying.item.artists
+                  .map((artist) => artist.name)
+                  .join(", ")}
+              </Text>
+            </View>
+          )}
+        <View style={styles.topContent}>
+          {/* View for top 3 songs */}
+          <View style={styles.tracksView}>
+            <Text style={styles.subtitle}>Top Tracks:</Text>
+            <ScrollView horizontal={true}>
+              {topTracks.slice(0, 3).map((track, index) => (
+                <View key={track.id} style={styles.trackContainer}>
+                  <View style={styles.textContainer}>
+                    <Text
+                      style={styles.trackName}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {index + 1}. {track.name}
+                    </Text>
+                    <Text
+                      style={styles.trackArtist}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {track.artists.map((artist) => artist.name).join(", ")}
+                    </Text>
+                  </View>
+                  <Image
+                    source={{ uri: track.album.images[0].url }}
+                    style={styles.trackImage}
+                  />
                 </View>
-                <Image
-                  source={{ uri: track.album.images[0].url }}
-                  style={styles.trackImage}
-                />
-              </View>
-            ))}
-          </ScrollView>
-        </View>
+              ))}
+            </ScrollView>
+          </View>
 
-        {/* View for top 3 artists */}
-        <View style={styles.artistsView}>
-          <Text style={styles.subtitle}>Top Artists:</Text>
-          <ScrollView horizontal={true}>
-            {topArtists.slice(0, 3).map((artist, index) => (
-              <View key={artist.id} style={styles.artistContainer}>
-                <View style={styles.textContainer}>
-                  <Text
-                    style={styles.artistName}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {index + 1}. {artist.name}
-                  </Text>
+          {/* View for top 3 artists */}
+          <View style={styles.artistsView}>
+            <Text style={styles.subtitle}>Top Artists:</Text>
+            <ScrollView horizontal={true}>
+              {topArtists.slice(0, 3).map((artist, index) => (
+                <View key={artist.id} style={styles.artistContainer}>
+                  <View style={styles.textContainer}>
+                    <Text
+                      style={styles.artistName}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                    >
+                      {index + 1}. {artist.name}
+                    </Text>
+                  </View>
+                  <Image
+                    source={{ uri: artist.images[0]?.url }}
+                    style={styles.artistImage}
+                  />
                 </View>
-                <Image
-                  source={{ uri: artist.images[0]?.url }}
-                  style={styles.artistImage}
-                />
-              </View>
-            ))}
-          </ScrollView>
+              ))}
+            </ScrollView>
+          </View>
         </View>
-      </View>
-    </View>
+      </SafeAreaView>
+      {/* <CustomBottomNavBar /> */}
+    </ScrollView>
   );
 };
 
@@ -196,7 +201,13 @@ const styles = StyleSheet.create({
   },
   topContent: {
     marginTop: 20,
+    paddingLeft: 15,
+    paddingRight: 15,
     width: "100%",
+
+    borderWidth: 1,
+    borderColor: "black",
+    borderStyle: "dashed",
   },
   subtitle: {
     fontSize: 18,
@@ -252,8 +263,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   currentlyPlaying: {
-    alignItems: "center", // Add this to center the content
+    alignItems: "center",
+    marginTop: 30, // Add marginTop to create space between the "Welcome" text and the "Now Playing" section
+    marginBottom: 10, // Add marginBottom to create space between the elements
   },
+
+  currentlyPlayingTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10, // Add marginBottom to create space between the title and the content
+  },
+
   songTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -269,7 +289,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     position: "absolute",
-    top: 0,
+    top: 30,
     left: 0,
     right: 0,
     marginTop: 20,

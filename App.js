@@ -4,9 +4,9 @@ import LoginScreen from "./LoginScreen";
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <LoginScreen />
-    </SafeAreaView>
+    </View>
   );
 }
 

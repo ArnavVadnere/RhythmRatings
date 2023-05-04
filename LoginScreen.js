@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import * as Random from "expo-random";
-import * as Crypto from "expo-crypto";
+import { useAuthRequest } from "expo-auth-session";
 import HomePage from "./HomePage";
+import CustomBottomNavBar from "./BottomTabNavigator";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -138,9 +137,7 @@ const App = () => {
           <Text style={styles.buttonText}>Login with Spotify</Text>
         </TouchableOpacity>
       ) : (
-        <View>
-          <HomePage token={token} refreshToken={refreshToken} />
-        </View>
+        <HomePage token={token} refreshToken={refreshToken} />
       )}
     </View>
   );
