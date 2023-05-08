@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
-import HomePage from "./HomePage";
-import CustomBottomNavBar from "./BottomTabNavigator";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const App = () => {
+const LoginScreen = ({ navigation }) => {
   React.useEffect(() => {}, [token]);
 
   React.useEffect(() => {
@@ -19,6 +17,16 @@ const App = () => {
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+
+  //show navbar after loggedin
+  React.useEffect(() => {
+    if (loggedIn) {
+      navigation.navigate("BottomTabs", {
+        token: token,
+        refreshToken: refreshToken,
+      });
+    }
+  }, [loggedIn, navigation]);
 
   const discovery = {
     authorizationEndpoint: "https://accounts.spotify.com/authorize",
@@ -88,9 +96,9 @@ const App = () => {
     const expiresIn = data.expires_in;
     const expirationTime = new Date().getTime() + expiresIn * 1000;
 
-    setTimeout(() => {
-      refreshAccessToken();
-    }, refreshTime);
+    // setTimeout(() => {
+    //   refreshAccessToken();
+    // }, refreshTime);
   };
 
   const refreshAccessToken = async () => {
@@ -136,9 +144,7 @@ const App = () => {
         >
           <Text style={styles.buttonText}>Login with Spotify</Text>
         </TouchableOpacity>
-      ) : (
-        <HomePage token={token} refreshToken={refreshToken} />
-      )}
+      ) : null}
     </View>
   );
 };
@@ -170,4 +176,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default LoginScreen;

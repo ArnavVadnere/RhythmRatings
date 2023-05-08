@@ -1,0 +1,2 @@
+1) create friend implementation 
+2) algo for music compatibility

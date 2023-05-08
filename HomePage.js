@@ -8,14 +8,14 @@ import {
   SafeAreaView,
 } from "react-native";
 
-const HomePage = (props) => {
-  const { token, refreshToken } = props;
+const HomePage = ({ token, refreshToken }) => {
+  // const { token, refreshToken } = props;
+  console.log("ASOFJSAF", token);
   const [topTracks, setTopTracks] = useState([]);
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const [topArtists, setTopArtists] = useState([]);
   const [displayName, setDisplayName] = useState("");
 
-  console.log("IM INSIDE THE HOMEPAGE");
   const fetchAndSetCurrentlyPlayingSong = async () => {
     const songData = await fetchCurrentlyPlayingSong(token);
     setCurrentlyPlaying(songData);
@@ -25,6 +25,9 @@ const HomePage = (props) => {
     if (token) {
       fetchTopArtists();
       fetchDisplayName();
+      console.log("TOKEN FOUND");
+    } else {
+      console.log("NO TOKEN FOUND");
     }
   }, [token]);
 
@@ -187,7 +190,6 @@ const HomePage = (props) => {
           </View>
         </View>
       </SafeAreaView>
-      {/* <CustomBottomNavBar /> */}
     </ScrollView>
   );
 };
@@ -201,13 +203,9 @@ const styles = StyleSheet.create({
   },
   topContent: {
     marginTop: 20,
-    paddingLeft: 15,
+    // paddingLeft: 15,
     paddingRight: 15,
     width: "100%",
-
-    borderWidth: 1,
-    borderColor: "black",
-    borderStyle: "dashed",
   },
   subtitle: {
     fontSize: 18,
@@ -288,11 +286,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    position: "absolute",
-    top: 30,
-    left: 0,
-    right: 0,
-    marginTop: 20,
+    marginTop: 15, // Add marginTop to create space from the top of the container
+    marginBottom: 15, // Add marginBottom to create space from the next element
   },
 });
 

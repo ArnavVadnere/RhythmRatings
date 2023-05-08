@@ -28,7 +28,7 @@ const TopTracks = (props) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Home Page</Text>
+      <Text style={styles.title}>Welcome to Top Tracks</Text>
       <Text style={styles.subtitle}>Top Tracks:</Text>
       <ScrollView>
         {topTracks.map((track, index) => (

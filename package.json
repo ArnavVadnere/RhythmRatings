@@ -11,6 +11,7 @@
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
     "@expo/vector-icons": "^13.0.0",
+    "@react-native-firebase/app": "^17.4.3",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/material-bottom-tabs": "^6.2.15",
     "@react-navigation/native": "^6.1.6",
@@ -25,6 +26,7 @@
     "expo-random": "~13.1.1",
     "expo-status-bar": "~1.4.4",
     "expo-web-browser": "~12.1.1",
+    "firebase": "^9.21.0",
     "query-string": "^8.1.0",
     "react": "18.2.0",
     "react-native": "0.71.4",
