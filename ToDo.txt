@@ -1,2 +1,3 @@
-1) create friend implementation 
+1) add email to auth and make that the userid 
+create friend implementation 
 2) algo for music compatibility

@@ -2,21 +2,88 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
+import firebase from "./firebase";
+import {
+  getAuth,
+  signInWithCustomToken,
+  updateProfile,
+  updateEmail,
+} from "firebase/auth";
 
 WebBrowser.maybeCompleteAuthSession();
 
 const LoginScreen = ({ navigation }) => {
   React.useEffect(() => {}, [token]);
 
-  React.useEffect(() => {
-    if (response) {
-    }
-    // ...
-  }, [response]);
-
   const [token, setToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+
+  //firebase stuff
+  const fetchFirebaseToken = async (spotifyAccessToken) => {
+    try {
+      const response = await fetch(
+        `https://us-central1-spotifyapp-22d72.cloudfunctions.net/getFirebaseToken?code=${spotifyAccessToken}`
+      );
+
+      const data = await response.json();
+      return data.firebaseToken;
+    } catch (error) {
+      console.error("Error fetching Firebase token:", error);
+      console.error(
+        "Error in getFirebaseToken:",
+        error.message,
+        error.response && error.response.data
+      );
+      return null; // Return null or an appropriate default value in case of an error
+    }
+  };
+
+  //return display name
+  const fetchDisplayName = async (accessToken) => {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    return data.display_name;
+  };
+  //return email address
+  const fetchEmail = async (accessToken) => {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    return data.email;
+  };
+  //return photo url
+  const fetchedPhotoUrl = async (accessToken) => {
+    const response = await fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    if (data.images[0].url == undefined) {
+      return "";
+    } else {
+      return data.images[0].url;
+    }
+  };
 
   //show navbar after loggedin
   React.useEffect(() => {
@@ -99,6 +166,54 @@ const LoginScreen = ({ navigation }) => {
     // setTimeout(() => {
     //   refreshAccessToken();
     // }, refreshTime);
+
+    //call firebase token function
+    const fetchedDisplayName = await fetchDisplayName(data.access_token);
+    const fetchedEmail = await fetchEmail(data.access_token);
+    const fetchedPhoto = await fetchedPhotoUrl(data.access_token);
+
+    const firebaseToken = await fetchFirebaseToken(data.access_token);
+    if (firebaseToken) {
+      const auth = getAuth();
+      signInWithCustomToken(auth, firebaseToken)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+
+          // Create an async function to update the user profile
+          const updateUserProfile = async (
+            displayName,
+            emailAddress,
+            photoUrl
+          ) => {
+            // Set the displayName for the user
+            await updateProfile(user, {
+              displayName: displayName,
+              photoURL: photoUrl,
+            });
+
+            // Set the email for the user
+            try {
+              await updateEmail(user, emailAddress);
+            } catch (error) {
+              console.error("Error updating email:", error);
+            }
+
+            // Log the updated user to see the changes
+            console.log("User profile updated:", user);
+          };
+
+          // Call the async function
+          updateUserProfile(fetchedDisplayName, fetchedEmail, fetchedPhoto);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error(errorMessage);
+        });
+    } else {
+      console.error("Firebase token is not valid or could not be fetched.");
+    }
   };
 
   const refreshAccessToken = async () => {
@@ -129,7 +244,6 @@ const LoginScreen = ({ navigation }) => {
     });
 
     const data = await response.json();
-    console.log("Refreshed DATA", data);
     setToken(data.access_token);
   };
 

@@ -7,95 +7,103 @@ import {
   Image,
   SafeAreaView,
 } from "react-native";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const HomePage = ({ token, refreshToken }) => {
-  // const { token, refreshToken } = props;
-  console.log("ASOFJSAF", token);
   const [topTracks, setTopTracks] = useState([]);
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const [topArtists, setTopArtists] = useState([]);
   const [displayName, setDisplayName] = useState("");
-
-  const fetchAndSetCurrentlyPlayingSong = async () => {
-    const songData = await fetchCurrentlyPlayingSong(token);
-    setCurrentlyPlaying(songData);
-  };
+  const db = getFirestore();
 
   useEffect(() => {
-    if (token) {
-      fetchTopArtists();
-      fetchDisplayName();
-      console.log("TOKEN FOUND");
-    } else {
-      console.log("NO TOKEN FOUND");
-    }
-  }, [token]);
-
-  const fetchDisplayName = async () => {
-    const response = await fetch("https://api.spotify.com/v1/me", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+    const auth = getAuth();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setDisplayName(user.displayName);
+      } else {
+        console.log("no work");
+      }
     });
 
-    const data = await response.json();
-    setDisplayName(data.display_name);
-  };
-
-  const fetchTopArtists = async () => {
-    const response = await fetch(
-      "https://api.spotify.com/v1/me/top/artists?limit=3",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const data = await response.json();
-    setTopArtists(data.items);
-  };
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     fetchAndSetCurrentlyPlayingSong();
   }, [token]);
 
   useEffect(() => {
+    let unsubscribe;
+
+    const fetchTopArtists = async () => {
+      const response = await fetch(
+        "https://api.spotify.com/v1/me/top/artists",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      setTopArtists(data.items);
+      return data.items;
+    };
+
+    const fetchTopTracks = async () => {
+      const response = await fetch("https://api.spotify.com/v1/me/top/tracks", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      setTopTracks(data.items);
+      return data.items;
+    };
+
+    const auth = getAuth();
+
     if (token) {
-      fetchTopTracks();
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          fetchTopTracks().then((tracks) => {
+            saveTopTracks(tracks, user.uid);
+            console.log(tracks);
+          });
+          fetchTopArtists().then((artists) => {
+            saveTopArtists(artists, user.uid);
+          });
+        } else {
+          console.log("User is not signed in");
+        }
+      });
     }
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [token]);
 
   useEffect(() => {
     if (token) {
       const intervalId = setInterval(() => {
         fetchAndSetCurrentlyPlayingSong();
-      }, 5000); // 5000ms (5 seconds) interval to update the song information
+      }, 5000);
 
-      // Cleanup function to clear the interval when the component is unmounted
       return () => {
         clearInterval(intervalId);
       };
     }
   }, [token]);
-
-  const fetchTopTracks = async () => {
-    const response = await fetch("https://api.spotify.com/v1/me/top/tracks", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-    // console.log("Top Tracks", data);
-    setTopTracks(data.items);
-  };
 
   const fetchCurrentlyPlayingSong = async (accessToken) => {
     const response = await fetch(
@@ -109,6 +117,29 @@ const HomePage = ({ token, refreshToken }) => {
 
     const data = await response.json();
     return data;
+  };
+
+  const saveTopTracks = async (tracks, uid) => {
+    try {
+      const docRef = doc(db, "topTracks", uid);
+      await setDoc(docRef, { tracks });
+    } catch (error) {
+      console.error("Error writing document: ", error);
+    }
+  };
+
+  const saveTopArtists = async (artists, uid) => {
+    try {
+      const docRef = doc(db, "topArtists", uid);
+      await setDoc(docRef, { artists });
+    } catch (error) {
+      console.error("Error writing document: ", error);
+    }
+  };
+
+  const fetchAndSetCurrentlyPlayingSong = async () => {
+    const songData = await fetchCurrentlyPlayingSong(token);
+    setCurrentlyPlaying(songData);
   };
 
   return (

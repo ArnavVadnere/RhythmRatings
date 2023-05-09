@@ -22,7 +22,6 @@ const TopTracks = (props) => {
     });
 
     const data = await response.json();
-    console.log("Top Tracks", data);
     setTopTracks(data.items);
   };
 
@@ -40,7 +39,7 @@ const TopTracks = (props) => {
               {track.artists.map((artist) => artist.name).join(", ")}
             </Text>
             <Image
-              source={{ uri: track.album.images[0].url }}
+              source={{ uri: track.album.images[0].url }} //fix undefined problem
               style={styles.trackImage}
             />
           </View>

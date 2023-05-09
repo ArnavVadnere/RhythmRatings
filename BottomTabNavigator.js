@@ -9,7 +9,6 @@ const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = ({ route }) => {
   const { token, refreshToken } = route.params;
-  console.log("token in bt", token);
 
   return (
     <Tab.Navigator>
