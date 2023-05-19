@@ -126,10 +126,10 @@ const FriendsPage = () => {
     const userRef = doc(db, "users", userId);
     const friendRef = doc(db, "users", friend.id);
     await updateDoc(userRef, {
-      friends: arrayUnion(friendRef),
+      friends: arrayUnion(friend.id),
     });
     await updateDoc(friendRef, {
-      friends: arrayUnion(userRef),
+      friends: arrayUnion(userId),
     });
     console.log("Friend request accepted!");
   };
