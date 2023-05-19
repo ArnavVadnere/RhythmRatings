@@ -22,6 +22,7 @@ import {
   where,
   updateDoc,
   arrayUnion,
+  deleteDoc,
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -131,7 +132,13 @@ const FriendsPage = () => {
     await updateDoc(friendRef, {
       friends: arrayUnion(userId),
     });
-    console.log("Friend request accepted!");
+
+    // remove friend request from Firestore
+    // await deleteDoc(requestRef);
+    // update local state
+    setfriendRequests(
+      friendRequests.filter((request) => request.id !== friend.id)
+    );
   };
 
   const toggleSearchBar = () => {
