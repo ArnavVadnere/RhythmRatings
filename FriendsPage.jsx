@@ -133,8 +133,18 @@ const FriendsPage = () => {
       friends: arrayUnion(userId),
     });
 
+    // update local state
+    setfriendRequests(
+      friendRequests.filter((request) => request.id !== friend.id)
+    );
+  };
+
+  const declineRequest = async (friend) => {
+    const requestRef = doc(db, "users", userId, "friendRequests", friend.id);
+
     // remove friend request from Firestore
-    // await deleteDoc(requestRef);
+    await deleteDoc(requestRef);
+
     // update local state
     setfriendRequests(
       friendRequests.filter((request) => request.id !== friend.id)
