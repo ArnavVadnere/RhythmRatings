@@ -22,8 +22,6 @@ const HomePage = ({ token, refreshToken }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setDisplayName(user.displayName);
-      } else {
-        console.log("no work");
       }
     });
 
@@ -69,18 +67,19 @@ const HomePage = ({ token, refreshToken }) => {
     };
 
     const auth = getAuth();
-
+    console.log("token", token);
     if (token) {
       unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
+          console.log("User is signed in");
           fetchTopTracks().then((tracks) => {
             saveTopTracks(tracks, user.uid);
-            console.log(tracks);
           });
           fetchTopArtists().then((artists) => {
             saveTopArtists(artists, user.uid);
           });
         } else {
+          console.log("USER", user);
           console.log("User is not signed in");
         }
       });

@@ -1,3 +1,34 @@
-1) add email to auth and make that the userid 
-create friend implementation 
+1) create friend implementation 
+    create a friend page
+    search bar for friends 
+        search for other users by username
+        syncing with their contacts or social media accounts
+    place for friend requests 
+    notification system for when a user gets a new friend request
 2) algo for music compatibility
+    visually represent the similarities and differences in music taste between users
+3) Remove spotify keys 
+4) Loading screen after logging into spotify, awaiting to fetch firestone data
+
+
+PAGES: 
+    Home Page:
+        Music Match: Highlight a feature where a random "music match" from their friends is displayed, showing how similar their music tastes are.
+    
+    Friend Page: Seach bar to search for friends, friend request accept, rank friends with top music compatibility 
+    
+    Friend Profile Page: When a user selects a friend, they could be taken to that friend's profile. This page could display the friend's top artists/songs, a "music match" percentage, and an option to generate a shared playlist.
+    
+    Compare Page: This page could display a more in-depth comparison of the user's and friend's music tastes. This could include shared artists/songs, a breakdown of common and unique music genres, and other relevant data
+    
+    Settings Page(Nav Bar): It's always a good idea to include a settings page where users can manage their account information, app preferences, and log out.
+    
+    Song/Artist Info Page: Number of times you listend to their songs and shit
+    
+    User Profile(Nav Bar): A small icon or image of the user's profile (pulling from their Spotify profile picture) which can be clicked to access profile settings and personal information. Contains Personal Stats
+
+
+
+   
+
+

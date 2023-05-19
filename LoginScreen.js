@@ -9,6 +9,13 @@ import {
   updateProfile,
   updateEmail,
 } from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -20,6 +27,7 @@ const LoginScreen = ({ navigation }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
+  const [userUID, setUID] = useState("");
 
   //firebase stuff
   const fetchFirebaseToken = async (spotifyAccessToken) => {
@@ -38,6 +46,24 @@ const LoginScreen = ({ navigation }) => {
         error.response && error.response.data
       );
       return null; // Return null or an appropriate default value in case of an error
+    }
+  };
+
+  //save user data in firestone
+  const saveUserInfo = async (user) => {
+    const db = getFirestore();
+    try {
+      const docRef = doc(db, "users", user.uid);
+      await setDoc(docRef, {
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        userID: user.uid,
+        email: user.email,
+      });
+
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
     }
   };
 
@@ -78,8 +104,9 @@ const LoginScreen = ({ navigation }) => {
     });
 
     const data = await response.json();
-    if (data.images[0].url == undefined) {
-      return "";
+    // if (data.images[0].url == undefined) {
+    if (data.images.length == 0) {
+      return "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
     } else {
       return data.images[0].url;
     }
@@ -171,7 +198,6 @@ const LoginScreen = ({ navigation }) => {
     const fetchedDisplayName = await fetchDisplayName(data.access_token);
     const fetchedEmail = await fetchEmail(data.access_token);
     const fetchedPhoto = await fetchedPhotoUrl(data.access_token);
-
     const firebaseToken = await fetchFirebaseToken(data.access_token);
     if (firebaseToken) {
       const auth = getAuth();
@@ -179,7 +205,6 @@ const LoginScreen = ({ navigation }) => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-
           // Create an async function to update the user profile
           const updateUserProfile = async (
             displayName,
@@ -205,6 +230,7 @@ const LoginScreen = ({ navigation }) => {
 
           // Call the async function
           updateUserProfile(fetchedDisplayName, fetchedEmail, fetchedPhoto);
+          saveUserInfo(user);
         })
         .catch((error) => {
           const errorCode = error.code;

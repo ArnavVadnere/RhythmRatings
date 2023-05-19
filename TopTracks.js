@@ -1,6 +1,13 @@
 // TopTracks.js
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  SafeAreaView,
+} from "react-native";
 
 const TopTracks = (props) => {
   const { token, refreshToken } = props;
@@ -26,7 +33,7 @@ const TopTracks = (props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Welcome to Top Tracks</Text>
       <Text style={styles.subtitle}>Top Tracks:</Text>
       <ScrollView>
@@ -45,7 +52,7 @@ const TopTracks = (props) => {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

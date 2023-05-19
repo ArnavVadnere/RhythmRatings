@@ -1,0 +1,32 @@
+[debug] [2023-05-11T18:10:17.874Z] ----------------------------------------------------------------------
+[debug] [2023-05-11T18:10:17.875Z] Command:       /opt/homebrew/Cellar/node/18.7.0/bin/node /opt/homebrew/bin/firebase functions:config:get
+[debug] [2023-05-11T18:10:17.875Z] CLI Version:   11.30.0
+[debug] [2023-05-11T18:10:17.875Z] Platform:      darwin
+[debug] [2023-05-11T18:10:17.875Z] Node Version:  v18.7.0
+[debug] [2023-05-11T18:10:17.878Z] Time:          Thu May 11 2023 14:10:17 GMT-0400 (Eastern Daylight Time)
+[debug] [2023-05-11T18:10:17.878Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-05-11T18:10:17.880Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2023-05-11T18:10:17.921Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-05-11T18:10:17.921Z] > authorizing via signed-in user (arnavvadnere@gmail.com)
+[debug] [2023-05-11T18:10:17.921Z] [iam] checking project spotifyapp-22d72 for permissions ["firebase.projects.get","runtimeconfig.configs.get","runtimeconfig.configs.list","runtimeconfig.variables.get","runtimeconfig.variables.list"]
+[debug] [2023-05-11T18:10:17.922Z] > refreshing access token with scopes: []
+[debug] [2023-05-11T18:10:17.922Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-05-11T18:10:17.922Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-05-11T18:10:18.102Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2023-05-11T18:10:18.102Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2023-05-11T18:10:18.122Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-05-11T18:10:18.122Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-05-11T18:10:18.133Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/spotifyapp-22d72:testIamPermissions [none]
+[debug] [2023-05-11T18:10:18.134Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/spotifyapp-22d72:testIamPermissions x-goog-quota-user=projects/spotifyapp-22d72
+[debug] [2023-05-11T18:10:18.134Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/spotifyapp-22d72:testIamPermissions {"permissions":["firebase.projects.get","runtimeconfig.configs.get","runtimeconfig.configs.list","runtimeconfig.variables.get","runtimeconfig.variables.list"]}
+[debug] [2023-05-11T18:10:18.389Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/spotifyapp-22d72:testIamPermissions 200
+[debug] [2023-05-11T18:10:18.389Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/spotifyapp-22d72:testIamPermissions {"permissions":["firebase.projects.get","runtimeconfig.configs.get","runtimeconfig.configs.list","runtimeconfig.variables.get","runtimeconfig.variables.list"]}
+[debug] [2023-05-11T18:10:18.390Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/spotifyapp-22d72/services/runtimeconfig.googleapis.com [none]
+[debug] [2023-05-11T18:10:18.390Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/spotifyapp-22d72/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/spotifyapp-22d72
+[debug] [2023-05-11T18:10:18.710Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/spotifyapp-22d72/services/runtimeconfig.googleapis.com 200
+[debug] [2023-05-11T18:10:18.710Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/spotifyapp-22d72/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2023-05-11T18:10:18.711Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/spotifyapp-22d72/configs [none]
+[debug] [2023-05-11T18:10:19.088Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/spotifyapp-22d72/configs 200
+[debug] [2023-05-11T18:10:19.089Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/spotifyapp-22d72/configs {"configs":[{"name":"projects/spotifyapp-22d72/configs/spotify"}]}
+[debug] [2023-05-11T18:10:19.089Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/spotifyapp-22d72/configs/spotify/variables [none]

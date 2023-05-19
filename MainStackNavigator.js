@@ -3,6 +3,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./LoginScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
+import FriendProfile from "./FriendProfile";
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ const MainStackNavigator = () => {
         component={BottomTabNavigator}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="FriendProfile" component={FriendProfile} />
     </Stack.Navigator>
   );
 };
