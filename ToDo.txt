@@ -1,15 +1,14 @@
-1) create friend implementation 
-    create a friend page
-    search bar for friends 
-        search for other users by username
-        syncing with their contacts or social media accounts
-    place for friend requests 
-    notification system for when a user gets a new friend request
-2) algo for music compatibility
-    visually represent the similarities and differences in music taste between users
-3) Remove spotify keys 
-4) Loading screen after logging into spotify, awaiting to fetch firestone data
+when accept friend request add to the seciton
+    split up friends section and friend requests by half
 
+ syncing with their contacts or social media accounts
+
+    notification system for when a user gets a new friend request
+
+algo for music compatibility
+    visually represent the similarities and differences in music taste between users
+
+ Remove spotify keys 
 
 PAGES: 
     Home Page:
@@ -26,6 +25,8 @@ PAGES:
     Song/Artist Info Page: Number of times you listend to their songs and shit
     
     User Profile(Nav Bar): A small icon or image of the user's profile (pulling from their Spotify profile picture) which can be clicked to access profile settings and personal information. Contains Personal Stats
+
+    Discover: Find new music based on user's taste or what friends are listening to
 
 
 

@@ -30,7 +30,6 @@ const BottomTabNavigator = ({ route }) => {
 
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => (
@@ -38,7 +37,11 @@ const BottomTabNavigator = ({ route }) => {
           ),
           headerShown: false,
         }}
-      />
+      >
+        {(props) => (
+          <ProfileScreen {...props} token={token} refreshToken={refreshToken} />
+        )}
+      </Tab.Screen>
 
       <Tab.Screen
         name="TopTracks"
