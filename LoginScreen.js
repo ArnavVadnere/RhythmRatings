@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Image } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
@@ -275,16 +275,22 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {!loggedIn ? (
-        <TouchableOpacity
-          onPress={() => {
-            promptAsync();
-          }}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>Login with Spotify</Text>
-        </TouchableOpacity>
-      ) : null}
+      {/* <Image source={require("search-app/src/logo.svg")} style={styles.logo} /> */}
+      <Text style={styles.appName}>Rhythm Rhymes</Text>
+      {!loggedIn && (
+        <View style={styles.authContainer}>
+          <Text style={styles.tagline}>Your music journey begins here</Text>
+          <TouchableOpacity
+            onPress={() => {
+              promptAsync();
+            }}
+            style={styles.loginButton}
+          >
+            <Text style={styles.loginButtonText}>Login with Spotify</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {/* You can add more UI elements here if needed */}
     </View>
   );
 };
@@ -294,26 +300,45 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FFFFFF", // or any color that matches your branding
   },
-  button: {
-    backgroundColor: "#1DB954",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
+  logo: {
+    width: 150,
+    height: 150,
+    resizeMode: "contain",
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-  tokenText: {
-    fontSize: 16,
+  appName: {
+    fontSize: 32,
     fontWeight: "bold",
-    marginTop: 20,
+    marginVertical: 20,
   },
-  token: {
-    fontSize: 12,
-    marginTop: 5,
+  authContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "80%",
   },
+  tagline: {
+    fontSize: 16,
+    color: "#888",
+    marginBottom: 20,
+  },
+  loginButton: {
+    backgroundColor: "#1DB954", // Spotify color
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 30,
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: { height: 3, width: 0 },
+    elevation: 5,
+  },
+  loginButtonText: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  // ... any other styles you might need ...
 });
 
 export default LoginScreen;

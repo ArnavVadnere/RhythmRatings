@@ -15,6 +15,7 @@ const HomePage = ({ token, refreshToken }) => {
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const [topArtists, setTopArtists] = useState([]);
   const [displayName, setDisplayName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const db = getFirestore();
 
   useEffect(() => {
@@ -72,6 +73,7 @@ const HomePage = ({ token, refreshToken }) => {
       unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           console.log("User is signed in");
+          setIsLoading(false);
           fetchTopTracks().then((tracks) => {
             saveTopTracks(tracks, user.uid);
           });
@@ -140,6 +142,14 @@ const HomePage = ({ token, refreshToken }) => {
     const songData = await fetchCurrentlyPlayingSong(token);
     setCurrentlyPlaying(songData);
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView>
@@ -318,6 +328,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 15, // Add marginTop to create space from the top of the container
     marginBottom: 15, // Add marginBottom to create space from the next element
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
