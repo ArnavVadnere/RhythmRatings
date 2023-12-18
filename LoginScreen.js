@@ -137,6 +137,7 @@ const LoginScreen = ({ navigation }) => {
         "user-read-private",
         "user-read-email",
         "user-read-recently-played",
+        "playlist-read-private",
       ],
       redirectUri: "exp://172.28.228.16:19000/",
       extraParams: {

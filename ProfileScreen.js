@@ -17,6 +17,9 @@ const ProfileScreen = ({ token, refreshToken }) => {
   const [displayLimit, setDisplayLimit] = useState(3); // State to control display limit
   const [mostPlayedGenre, setMostPlayedGenre] = useState("");
   const [averageListeningTime, setAverageListeningTime] = useState(0);
+  const [userPlaylists, setUserPlaylists] = useState([]);
+  const [topUserPlaylists, setTopUserPlaylists] = useState([]);
+  const [playlistDisplayLimit, setPlaylistDisplayLimit] = useState(3); // State to control display limit for playlists
 
   useEffect(() => {
     const auth = getAuth();
@@ -26,11 +29,20 @@ const ProfileScreen = ({ token, refreshToken }) => {
         fetchRecentTracks();
         fetchTopTracksOrArtists();
         fetchAverageListeningTime();
+        fetchUserPlaylists();
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  // Effect hook to find top playlists once playlists and recent tracks are fetched
+  useEffect(() => {
+    if (userPlaylists.length > 0 && recentTracks.length > 0) {
+      const topPlaylists = findTopPlaylists(userPlaylists, recentTracks);
+      setTopUserPlaylists(topPlaylists);
+    }
+  }, [userPlaylists, recentTracks]);
 
   const handleShowMore = () => {
     setDisplayLimit(recentTracks.length); // Update the display limit to show all tracks
@@ -38,6 +50,14 @@ const ProfileScreen = ({ token, refreshToken }) => {
 
   const handleShowLess = () => {
     setDisplayLimit(3); // Revert to showing only 3 tracks
+  };
+
+  const handlePlaylistShowMore = () => {
+    setPlaylistDisplayLimit(topUserPlaylists.length); // Show all playlists
+  };
+
+  const handlePlaylistShowLess = () => {
+    setPlaylistDisplayLimit(3); // Show only 3 playlists
   };
 
   const fetchRecentTracks = async () => {
@@ -88,7 +108,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
             genres[genre] = (genres[genre] || 0) + 1;
           });
         });
-        console.log("genre", genres);
         setMostPlayedGenre(
           Object.keys(genres).reduce((a, b) => (genres[a] > genres[b] ? a : b))
         );
@@ -133,6 +152,57 @@ const ProfileScreen = ({ token, refreshToken }) => {
     } catch (error) {
       console.error("Error fetching average listening time:", error);
     }
+  };
+
+  const fetchUserPlaylists = async () => {
+    try {
+      const response = await fetch("https://api.spotify.com/v1/me/playlists", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Your Spotify access token
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUserPlaylists(data.items);
+      } else {
+        console.error("Failed to fetch playlists:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching user playlists:", error);
+    }
+  };
+
+  // Analyze the playlists to find top 3 based on recently played tracks
+  const findTopPlaylists = (userPlaylists, recentTracks) => {
+    // Create a map to count occurrences of playlists in recently played tracks
+    let countsMap = {};
+
+    // Get playlist IDs from recently played tracks
+    const playlistIdsFromRecentTracks = recentTracks.map(
+      (track) => track.context?.uri.split(":")[2]
+    );
+
+    // Initialize counts for all playlists
+    userPlaylists.forEach((playlist) => {
+      countsMap[playlist.id] = 0;
+    });
+
+    // Increment the count for each playlist that appears in recently played tracks
+    playlistIdsFromRecentTracks.forEach((id) => {
+      if (countsMap[id] !== undefined) {
+        countsMap[id]++;
+      }
+    });
+
+    // Sort the playlists by their count in descending order and take the top 3
+    let topPlaylists = Object.keys(countsMap)
+      .sort((a, b) => countsMap[b] - countsMap[a])
+      .slice(0, playlistIdsFromRecentTracks.length)
+      .map((playlistId) =>
+        userPlaylists.find((playlist) => playlist.id === playlistId)
+      );
+
+    return topPlaylists;
   };
 
   return (
@@ -191,9 +261,29 @@ const ProfileScreen = ({ token, refreshToken }) => {
         </View>
         {/* Repeat for other sections like top artists, playlists, etc. */}
 
-        <View style={styles.settingsSection}>
-          <Text style={styles.sectionTitle}>Settings</Text>
-          {/* Include settings options */}
+        <View style={styles.musicSection}>
+          <Text style={styles.sectionTitle}>Favorite Playlists</Text>
+          {topUserPlaylists
+            .slice(0, playlistDisplayLimit)
+            .map((playlist, index) => (
+              <View key={index} style={styles.playlistItem}>
+                <Image
+                  source={{ uri: playlist.images[0].url }}
+                  style={styles.playlistImage}
+                />
+                <View style={styles.playlistInfo}>
+                  <Text style={styles.playlistName}>{playlist.name}</Text>
+                  {/* Include additional playlist info like total tracks, if needed */}
+                </View>
+              </View>
+            ))}
+          {topUserPlaylists.length > 3 &&
+            playlistDisplayLimit < topUserPlaylists.length && (
+              <Button title="Show More" onPress={handlePlaylistShowMore} />
+            )}
+          {playlistDisplayLimit === topUserPlaylists.length && (
+            <Button title="Show Less" onPress={handlePlaylistShowLess} />
+          )}
         </View>
       </SafeAreaView>
     </ScrollView>
@@ -261,6 +351,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%", // Adjust as per your layout
+    alignItems: "center",
   },
   statItem: {
     alignItems: "center",
@@ -273,7 +364,26 @@ const styles = StyleSheet.create({
   },
   statDescription: {
     fontSize: 16,
+    alignItems: "center",
   },
+  playlistItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  playlistImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  playlistInfo: {
+    marginLeft: 10,
+  },
+  playlistName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
   // Add more styles as needed
 });
 
