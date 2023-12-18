@@ -9,18 +9,16 @@ import {
   Button,
 } from "react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-// Additional imports may be required for fetching music data and user info
 
 const ProfileScreen = ({ token, refreshToken }) => {
   const [user, setUser] = useState(null);
   const [recentTracks, setRecentTracks] = useState([]);
-  const [displayLimit, setDisplayLimit] = useState(3); // State to control display limit
+  const [displayLimit, setDisplayLimit] = useState(3);
   const [mostPlayedGenre, setMostPlayedGenre] = useState("");
   const [averageListeningTime, setAverageListeningTime] = useState(0);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [topUserPlaylists, setTopUserPlaylists] = useState([]);
-  const [playlistDisplayLimit, setPlaylistDisplayLimit] = useState(3); // State to control display limit for playlists
-
+  const [playlistDisplayLimit, setPlaylistDisplayLimit] = useState(3);
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
@@ -36,7 +34,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
     return () => unsubscribe();
   }, []);
 
-  // Effect hook to find top playlists once playlists and recent tracks are fetched
   useEffect(() => {
     if (userPlaylists.length > 0 && recentTracks.length > 0) {
       const topPlaylists = findTopPlaylists(userPlaylists, recentTracks);
@@ -45,11 +42,11 @@ const ProfileScreen = ({ token, refreshToken }) => {
   }, [userPlaylists, recentTracks]);
 
   const handleShowMore = () => {
-    setDisplayLimit(recentTracks.length); // Update the display limit to show all tracks
+    setDisplayLimit(recentTracks.length); // show all tracks
   };
 
   const handleShowLess = () => {
-    setDisplayLimit(3); // Revert to showing only 3 tracks
+    setDisplayLimit(3); // show only 3 tracks
   };
 
   const handlePlaylistShowMore = () => {
@@ -79,7 +76,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
         setRecentTracks(data.items);
         return data.items;
       } else {
-        // Handle errors, e.g., invalid token, no internet connection
         console.error("Error fetching recent tracks:", data);
       }
     } catch (error) {
@@ -137,7 +133,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
           0
         );
 
-        // Finding the time span of these tracks
         const earliestPlayTime = new Date(
           data.items[data.items.length - 1].played_at
         );
@@ -158,7 +153,7 @@ const ProfileScreen = ({ token, refreshToken }) => {
     try {
       const response = await fetch("https://api.spotify.com/v1/me/playlists", {
         headers: {
-          Authorization: `Bearer ${token}`, // Your Spotify access token
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
@@ -172,29 +167,25 @@ const ProfileScreen = ({ token, refreshToken }) => {
     }
   };
 
-  // Analyze the playlists to find top 3 based on recently played tracks
   const findTopPlaylists = (userPlaylists, recentTracks) => {
-    // Create a map to count occurrences of playlists in recently played tracks
     let countsMap = {};
 
-    // Get playlist IDs from recently played tracks
     const playlistIdsFromRecentTracks = recentTracks.map(
       (track) => track.context?.uri.split(":")[2]
     );
 
-    // Initialize counts for all playlists
+    // Initialize countsmap
     userPlaylists.forEach((playlist) => {
       countsMap[playlist.id] = 0;
     });
 
-    // Increment the count for each playlist that appears in recently played tracks
     playlistIdsFromRecentTracks.forEach((id) => {
       if (countsMap[id] !== undefined) {
         countsMap[id]++;
       }
     });
 
-    // Sort the playlists by their count in descending order and take the top 3
+    //sort playlists in amount listened too
     let topPlaylists = Object.keys(countsMap)
       .sort((a, b) => countsMap[b] - countsMap[a])
       .slice(0, playlistIdsFromRecentTracks.length)
@@ -211,7 +202,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
         <View style={styles.profileHeader}>
           <Image source={{ uri: user?.photoURL }} style={styles.profileImage} />
           <Text style={styles.profileName}>{user?.displayName}</Text>
-          {/* Include additional user info like followers/following count, bio, etc. */}
         </View>
 
         <View style={styles.statsSection}>
@@ -232,8 +222,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
               </Text>
             </View>
           </View>
-
-          {/* ... rest of your JSX */}
         </View>
 
         <View style={styles.musicSection}>
@@ -259,7 +247,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
             <Button title="Hide" onPress={handleShowLess} />
           )}
         </View>
-        {/* Repeat for other sections like top artists, playlists, etc. */}
 
         <View style={styles.musicSection}>
           <Text style={styles.sectionTitle}>Favorite Playlists</Text>
@@ -273,7 +260,6 @@ const ProfileScreen = ({ token, refreshToken }) => {
                 />
                 <View style={styles.playlistInfo}>
                   <Text style={styles.playlistName}>{playlist.name}</Text>
-                  {/* Include additional playlist info like total tracks, if needed */}
                 </View>
               </View>
             ))}
@@ -350,7 +336,7 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%", // Adjust as per your layout
+    width: "100%",
     alignItems: "center",
   },
   statItem: {
@@ -360,7 +346,7 @@ const styles = StyleSheet.create({
   statData: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#4A90E2", // Example color, adjust as needed
+    color: "#4A90E2",
   },
   statDescription: {
     fontSize: 16,
@@ -383,8 +369,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
-  // Add more styles as needed
 });
 
 export default ProfileScreen;
