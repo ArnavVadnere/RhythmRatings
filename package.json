@@ -13,6 +13,7 @@
     "@expo/vector-icons": "^13.0.0",
     "@firebase/firestore": "^3.11.0",
     "@react-native-firebase/app": "^17.4.3",
+    "@react-native-picker/picker": "^2.6.1",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/material-bottom-tabs": "^6.2.15",
     "@react-navigation/native": "^6.1.6",

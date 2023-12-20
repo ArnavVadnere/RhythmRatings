@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import HomePage from "./HomePage";
 import ProfileScreen from "./ProfileScreen";
-import TopTracks from "./TopTracks";
+import MusicInsights from "./MusicInsights";
 import FriendsPage from "./FriendsPage";
 
 const Tab = createBottomTabNavigator();
@@ -44,9 +44,9 @@ const BottomTabNavigator = ({ route }) => {
       </Tab.Screen>
 
       <Tab.Screen
-        name="TopTracks"
+        name="MusicInsights"
         options={{
-          tabBarLabel: "Top Tracks",
+          tabBarLabel: "Music Insights",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="music" color={color} size={size} />
           ),
@@ -54,7 +54,7 @@ const BottomTabNavigator = ({ route }) => {
         }}
       >
         {(props) => (
-          <TopTracks {...props} token={token} refreshToken={refreshToken} />
+          <MusicInsights {...props} token={token} refreshToken={refreshToken} />
         )}
       </Tab.Screen>
 

@@ -8,6 +8,8 @@ when accept friend request add to the seciton
 algo for music compatibility
     visually represent the similarities and differences in music taste between users
 
+after loged in shouldnt be allowed to be back to login page when swipping right 
+
  Remove spotify keys 
 
 PAGES: 

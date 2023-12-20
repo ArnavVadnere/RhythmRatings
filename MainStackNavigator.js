@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./LoginScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import FriendProfile from "./FriendProfile";
+import SongDetails from "./SongDetails";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,11 @@ const MainStackNavigator = () => {
       <Stack.Screen
         name="BottomTabs"
         component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SongDetails"
+        component={SongDetails}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="FriendProfile" component={FriendProfile} />
