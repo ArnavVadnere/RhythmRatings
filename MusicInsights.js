@@ -57,6 +57,7 @@ const MusicInsights = (props) => {
         key={item.id}
         style={styles.card}
         onPress={() => onSongPress(item)}
+        disabled={mode !== "tracks"}
       >
         <Image
           source={{
@@ -85,8 +86,10 @@ const MusicInsights = (props) => {
     ));
   };
 
-  const onSongPress = (song) => {
-    navigation.navigate("SongDetails", { song });
+  const onSongPress = (item) => {
+    if (mode === "tracks") {
+      navigation.navigate("SongDetails", { song: item, token });
+    }
   };
 
   const TimeRangeButton = ({ title, active, onPress }) => (
