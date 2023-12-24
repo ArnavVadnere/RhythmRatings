@@ -7,10 +7,11 @@ import {
   ScrollView,
   SafeAreaView,
   Button,
+  TouchableOpacity,
 } from "react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-const ProfileScreen = ({ token, refreshToken }) => {
+const ProfileScreen = ({ token, refreshToken, navigation }) => {
   const [user, setUser] = useState(null);
   const [recentTracks, setRecentTracks] = useState([]);
   const [displayLimit, setDisplayLimit] = useState(3);
@@ -40,6 +41,10 @@ const ProfileScreen = ({ token, refreshToken }) => {
       setTopUserPlaylists(topPlaylists);
     }
   }, [userPlaylists, recentTracks]);
+
+  const onSongPress = (item) => {
+    navigation.navigate("SongDetails", { song: item, token });
+  };
 
   const handleShowMore = () => {
     setDisplayLimit(recentTracks.length); // show all tracks
@@ -227,7 +232,11 @@ const ProfileScreen = ({ token, refreshToken }) => {
         <View style={styles.musicSection}>
           <Text style={styles.sectionTitle}>Recently Played</Text>
           {recentTracks.slice(0, displayLimit).map((track, index) => (
-            <View key={index} style={styles.trackItem}>
+            <TouchableOpacity
+              key={index}
+              style={styles.trackItem}
+              onPress={() => onSongPress(track.track)}
+            >
               <Image
                 source={{ uri: track.track.album.images[0].url }}
                 style={styles.albumArt}
@@ -238,7 +247,7 @@ const ProfileScreen = ({ token, refreshToken }) => {
                   {track.track.artists.map((artist) => artist.name).join(", ")}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
           {recentTracks.length > 3 && displayLimit < recentTracks.length && (
             <Button title="Show More" onPress={handleShowMore} />

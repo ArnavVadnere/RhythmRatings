@@ -1,9 +1,7 @@
-import {React, useState, useEffect} from 'react';
-import { View, Button } from 'react-native';
-import { doc, setDoc, getFirestore } from 'firebase/firestore';
-import firebase from './firebase';
+import { React, useState, useEffect } from "react";
+import { View, Button } from "react-native";
+import { doc, setDoc, getFirestore } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
 
 const FriendProfile = ({ route }) => {
   const { friend } = route.params;
@@ -11,32 +9,29 @@ const FriendProfile = ({ route }) => {
   const [userId, setUserId] = useState("");
   const auth = getAuth();
 
-    useEffect(() => {
-      const unsubscribe = onAuthStateChanged(auth, user => {
-        setUserId(user ? user.uid : null);
-      });
-      return () => unsubscribe();
-    }, []);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUserId(user ? user.uid : null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleSendFriendRequest = async () => {
     try {
-      await setDoc(doc(db, 'users', friend.id, 'friendRequests', userId), {
+      await setDoc(doc(db, "users", friend.id, "friendRequests", userId), {
         senderId: userId,
-        status: 'pending',
+        status: "pending",
       });
 
-      alert('Friend request sent!');
+      alert("Friend request sent!");
     } catch (error) {
-      console.error('Error sending friend request: ', error);
+      console.error("Error sending friend request: ", error);
     }
   };
 
   return (
     <View>
-      <Button
-        title="Send Friend Request"
-        onPress={handleSendFriendRequest}
-      />
+      <Button title="Send Friend Request" onPress={handleSendFriendRequest} />
       {/* Other friend profile details go here */}
     </View>
   );
