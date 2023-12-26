@@ -68,7 +68,6 @@ const HomePage = ({ token, refreshToken }) => {
     };
 
     const auth = getAuth();
-    console.log("token", token);
     if (token) {
       unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -81,8 +80,7 @@ const HomePage = ({ token, refreshToken }) => {
             saveTopArtists(artists, user.uid);
           });
         } else {
-          console.log("USER", user);
-          console.log("User is not signed in");
+          console.error("User is not signed in", user);
         }
       });
     }

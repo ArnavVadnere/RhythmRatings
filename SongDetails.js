@@ -37,7 +37,6 @@ const SongDetails = ({ route, navigation }) => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Asfasf", data);
         setTrackData(data);
       } else {
         console.error(

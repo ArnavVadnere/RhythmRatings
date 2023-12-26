@@ -144,7 +144,6 @@ const ProfileScreen = ({ token, refreshToken, navigation }) => {
         const latestPlayTime = new Date(data.items[0].played_at);
         const daysCovered =
           (latestPlayTime - earliestPlayTime) / (1000 * 60 * 60 * 24);
-        console.log("DAYS COVERED", daysCovered);
 
         const averageTime = totalDuration / (daysCovered || 1) / 1000 / 60; // Convert to minutes
         setAverageListeningTime(averageTime);

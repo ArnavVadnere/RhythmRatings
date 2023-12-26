@@ -60,8 +60,6 @@ const LoginScreen = ({ navigation }) => {
         userID: user.uid,
         email: user.email,
       });
-
-      console.log("Document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -225,9 +223,6 @@ const LoginScreen = ({ navigation }) => {
             } catch (error) {
               console.error("Error updating email:", error);
             }
-
-            // Log the updated user to see the changes
-            console.log("User profile updated:", user);
           };
 
           // Call the async function
@@ -246,7 +241,7 @@ const LoginScreen = ({ navigation }) => {
 
   const refreshAccessToken = async () => {
     if (!refreshToken) {
-      console.log("No refresh token available.");
+      console.error("No refresh token available.");
       return;
     }
 

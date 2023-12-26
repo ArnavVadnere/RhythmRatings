@@ -23,6 +23,7 @@ import {
   updateDoc,
   arrayUnion,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -37,12 +38,23 @@ const FriendsPage = () => {
   const [displayName, setDisplayName] = useState("");
   const [friendRequests, setfriendRequests] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
+
   const auth = getAuth();
 
   //set userId
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUserId(user ? user.uid : null);
+      const uid = user ? user.uid : null;
+      setUserId(uid);
+      setUser(user);
+      if (uid) {
+        console.log("User ID Set: ", uid);
+        getFriends(uid);
+      } else {
+        console.log("User not logged in");
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -70,10 +82,24 @@ const FriendsPage = () => {
           user.displayName.toLowerCase().includes(query.toLowerCase()) &&
           user.displayName !== displayName
       );
-      console.log("ASFSAF", filteredUsers);
       setSearchResults(filteredUsers);
     } else {
       setSearchResults([]);
+    }
+  };
+
+  const getFriends = async (uid) => {
+    try {
+      if (!uid) {
+        console.log("User ID is null in getFriends"); // Debugging log
+        return;
+      }
+      const friendsRef = collection(db, "users", uid, "friends");
+      const querySnapshot = await getDocs(friendsRef);
+      const friendsList = querySnapshot.docs.map((doc) => doc.data());
+      setFriends(friendsList);
+    } catch (error) {
+      console.error("Error fetching friends: ", error);
     }
   };
 
@@ -83,7 +109,7 @@ const FriendsPage = () => {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      console.log("No pending friend requests found.");
+      console.error("No pending friend requests found.");
       return;
     }
 
@@ -100,7 +126,6 @@ const FriendsPage = () => {
       const docRef = doc(db, "users", senderIds[i]);
       const docSnap = await getDoc(docRef);
       const data = docSnap.data();
-      console.log("DATA", data);
       if (docSnap.exists()) {
         friendRequests.push({
           displayName: data.displayName,
@@ -108,35 +133,50 @@ const FriendsPage = () => {
           id: senderIds[i],
         });
       } else {
-        console.log("No such document!");
+        console.error("No such document!");
       }
     }
-    console.log(friendRequests);
     setfriendRequests(friendRequests);
   };
 
   const acceptRequest = async (friend) => {
-    //change friend request firestone to accepted
-    // Get the request document
-    const requestRef = doc(db, "users", userId, "friendRequests", friend.id);
+    try {
+      // Get the request document
+      const requestRef = doc(db, "users", userId, "friendRequests", friend.id);
 
-    // Update the request's status to 'accepted'
-    await updateDoc(requestRef, { status: "accepted" });
+      // Update the request's status to 'accepted'
+      await updateDoc(requestRef, { status: "accepted" });
 
-    // Add each user to the other's friends list
-    const userRef = doc(db, "users", userId);
-    const friendRef = doc(db, "users", friend.id);
-    await updateDoc(userRef, {
-      friends: arrayUnion(friend.id),
-    });
-    await updateDoc(friendRef, {
-      friends: arrayUnion(userId),
-    });
+      // Add the friend to the user's `friends` subcollection
+      const userFriendsRef = collection(db, "users", userId, "friends");
+      await setDoc(doc(userFriendsRef, friend.id), {
+        displayName: friend.displayName,
+        photoURL: friend.photoURL,
+        id: friend.id,
+      });
 
-    // update local state
-    setfriendRequests(
-      friendRequests.filter((request) => request.id !== friend.id)
-    );
+      // Add the user to the friend's `friends` subcollection
+      console.log("added", userId, "to", friend.id);
+      const friendFriendsRef = collection(db, "users", friend.id, "friends");
+      await setDoc(doc(friendFriendsRef, userId), {
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        id: userId,
+      });
+
+      // Remove the request from the `friendRequests` subcollection
+      await deleteDoc(requestRef);
+
+      // update local state
+      setfriendRequests((prevRequests) =>
+        prevRequests.filter((request) => request.id !== friend.id)
+      );
+
+      // Refresh the friends list
+      await getFriends();
+    } catch (error) {
+      console.error("Error accepting friend request: ", error);
+    }
   };
 
   const declineRequest = async (friend) => {
@@ -207,20 +247,29 @@ const FriendsPage = () => {
             ))}
         </View>
         <View>
-          <Text
-            style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}
-          >
-            Friends
-          </Text>
-          {/* {friends.map((friend, i) => (
-        <ListItem key={i} bottomDivider onPress={() => navigation.navigate('FriendProfile', { friendId: friend.id })}>
-          <Avatar source={{ uri: friend.profilePictureUrl }} />
-          <ListItem.Content>
-            <ListItem.Title>{friend.name}</ListItem.Title>
-          </ListItem.Content>
-          <ListItem.Chevron />
-        </ListItem>
-      ))} */}
+          {/* Friends List */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Friends</Text>
+            {friends &&
+              friends.map((friend, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={styles.friendItem}
+                  onPress={() =>
+                    navigation.navigate("FriendProfile", {
+                      friend: friend, // Corrected key
+                    })
+                  }
+                >
+                  <Image
+                    source={{ uri: friend.photoURL }}
+                    style={styles.friendImage}
+                  />
+                  <Text style={styles.friendName}>{friend.displayName}</Text>
+                </TouchableOpacity>
+              ))}
+          </View>
+
           <Text
             style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}
           >
@@ -289,8 +338,17 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontSize: 18,
+    fontWeight: "bold",
   },
-
+  requestContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    backgroundColor: "#FFF",
+  },
   requestImage: {
     width: 50,
     height: 50,
@@ -298,21 +356,48 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   requestText: {
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   acceptButton: {
-    backgroundColor: "green",
+    backgroundColor: "#4A90E2",
     color: "white",
     padding: 10,
-    marginRight: 10,
     borderRadius: 5,
   },
-
   declineButton: {
     backgroundColor: "red",
     color: "white",
     padding: 10,
     borderRadius: 5,
+  },
+  friendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    backgroundColor: "#FFF",
+  },
+  friendImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 15,
+  },
+  friendName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  section: {
+    padding: 10,
+    backgroundColor: "#F5F5F5",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 10,
+    textAlign: "center",
   },
 });
 
