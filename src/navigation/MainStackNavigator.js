@@ -1,10 +1,10 @@
 // MainStackNavigator.js
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import LoginScreen from "./LoginScreen";
+import LoginScreen from "../screens/LoginScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
-import FriendProfile from "./FriendProfile";
-import SongDetails from "./SongDetails";
+import FriendProfile from "../components/FriendProfile";
+import SongDetails from "../components/SongDetails";
 
 const Stack = createStackNavigator();
 

@@ -22,7 +22,7 @@ import {
   deleteDoc,
   setDoc,
 } from "firebase/firestore";
-import firebase from "./firebase";
+import firebase from "../services/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 

@@ -2,7 +2,7 @@ import React, { useState, Image } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
-import firebase from "./firebase";
+import firebase from "../services/firebase";
 import {
   getAuth,
   signInWithCustomToken,

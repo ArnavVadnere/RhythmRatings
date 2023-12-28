@@ -1,10 +1,10 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import HomePage from "./HomePage";
-import ProfileScreen from "./ProfileScreen";
-import MusicInsights from "./MusicInsights";
-import FriendsPage from "./FriendsPage";
+import HomePage from "../screens/HomePage";
+import ProfileScreen from "../screens/ProfileScreen";
+import MusicInsights from "../screens/MusicInsights";
+import FriendsPage from "../screens/FriendsPage";
 
 const Tab = createBottomTabNavigator();
 

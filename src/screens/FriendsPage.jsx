@@ -11,7 +11,7 @@ import {
 import { SearchBar } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import firebase from "./firebase";
+import firebase from "../services/firebase";
 import {
   collection,
   getDocs,
